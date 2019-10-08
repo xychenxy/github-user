@@ -21,6 +21,8 @@ The main point is 'componentWillReceiveProps().'
 Github website api: https://developer.github.com/v3/search/#search-users
 Request url: https://api.github.com/search/users?q=
 <br/>
+PS: There are two src files in it. src-props means is using props to communicate. <br>
+src means is using pub and sub method to communicate.
 This is search page.
 ![avatar](public/img/demo1.png)
 

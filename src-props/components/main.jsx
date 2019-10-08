@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types'
 import axios from 'axios'
-import PubSub from 'pubsub-js'
 
 export default class Main extends Component{
 
+    static propTypes = {
+        searchName: PropTypes.string.isRequired
+    }
 
     state ={
         initView: true,
@@ -13,47 +15,48 @@ export default class Main extends Component{
         errorMsg: null
     }
 
-    componentDidMount() {
-        // sub info
-        PubSub.subscribe('search', (msg, searchName) => {
-            // update status
-            this.setState(
-                {
-                    initView: false,
-                    loading:true
-                }
-            )
-            // send axios request
-            const url=`https://api.github.com/search/users?q=${searchName}`
-            axios.get(url)
-                .then(response=>{
-                    /**
-                     * 1. get the data
-                     * 2. update success status
-                     */
-                    const result = response.data
-                    // custom an object as a User, and put users in Users
-                    const users = result.items.map(item=>({
-                        name:item.login,
-                        url:item.html_url,
-                        avatarUrl:item.avatar_url
-                    }))
 
-                    this.setState({
-                        loading: false,
-                        users:users
-                    })
+    componentWillReceiveProps(newProps) {
+        const {searchName} = newProps
+        // update status
+        this.setState(
+            {
+                initView: false,
+                loading:true
+            }
+        )
+        // send axios request
+        const url=`https://api.github.com/search/users?q=${searchName}`
+        axios.get(url)
+            .then(response=>{
+                /**
+                 * 1. get the data
+                 * 2. update success status
+                 */
+                const result = response.data
+                // custom an object as a User, and put users in Users
+                const users = result.items.map(item=>({
+                    name:item.login,
+                    url:item.html_url,
+                    avatarUrl:item.avatar_url
+                }))
+
+                this.setState({
+                    loading: false,
+                    users:users
                 })
-                .catch(error=>{
-                    /**
-                     * update fail status
-                     */
-                    this.setState({
-                        loading: false,
-                        errorMsg:error.message
-                    })
+            })
+            .catch(error=>{
+                /**
+                 * update fail status
+                 */
+                this.setState({
+                    loading: false,
+                    errorMsg:error.message
                 })
-        })
+            })
+
+
     }
 
 
